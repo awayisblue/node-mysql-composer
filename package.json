@@ -4,7 +4,8 @@
   "description": "A simple nodejs mysql syntax composer for insert and update syntax.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha",
+    "test-dev":"mocha -w"
   },
   "repository": {
     "type": "git",
@@ -24,5 +25,9 @@
   "homepage": "https://github.com/awayisblue/node-mysql-composer#readme",
   "dependencies": {
     "mysql": "^2.13.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
   }
 }
