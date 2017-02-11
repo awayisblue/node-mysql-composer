@@ -1,6 +1,6 @@
 {
   "name": "mysql-composer",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A simple nodejs mysql syntax composer for insert and update syntax.",
   "main": "lib/index.js",
   "scripts": {

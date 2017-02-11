@@ -1,13 +1,13 @@
 const expect = require('chai').expect
 const sqlUtil = require('../lib/index')
-var mockConnection = {
-    query:function(sql,callback){
-        callback(null,sql)
-    }
-}
-var composer = sqlUtil.composer(mockConnection)
 
-describe('composer',function(){
+describe('#composer',function(){
+    var mockConnection = {
+        query:function(sql,callback){
+            callback(null,sql)
+        }
+    }
+    var composer = sqlUtil.composer(mockConnection)
     describe('#insert',function(){
         it('should throw error when table is not provided',function(){
             var fn = function(){
@@ -177,5 +177,55 @@ describe('composer',function(){
                 })
             })
         })
+    })
+})
+
+describe('#composeInsertString',function(){
+    it('should be a correct insert string',function(){
+        const insertStr = sqlUtil.composeInsertString({
+            field1:'value1',
+            field2:'value2'
+        })
+        expect(insertStr).to.satisfy(function(str){
+            var striped = str.trim().replace(/\s+/g," ")
+            return striped == "(`field1`,`field2`) values ('value1','value2')"
+        })
+    })
+    it('should throw error when data is not provided',function(){
+        var fn = function(){
+            const insertStr = sqlUtil.composeInsertString()
+        }
+        expect(fn).to.throw(Error)
+    })
+    it('should throw error when data is an empty object',function(){
+        var fn = function(){
+            const insertStr = sqlUtil.composeInsertString({})
+        }
+        expect(fn).to.throw(Error)
+    })
+})
+
+describe('#composeUpdateString',function(){
+    it('should be a correct update string',function(){
+        const updatStr = sqlUtil.composeUpdateString({
+            field1:'value1',
+            field2:'value2'
+        })
+        expect(updatStr).to.satisfy(function(str){
+            var striped = str.trim().replace(/\s+/g," ")
+            return striped == "`field1`='value1',`field2`='value2'"
+        })
+    })
+    it('should throw error when data is not provided',function(){
+        var fn = function(){
+            const updatStr = sqlUtil.composeUpdateString()
+        }
+        expect(fn).to.throw(Error)
+    })
+    it('should throw error when data is an empty object',function(){
+        var fn = function(){
+            const updatStr = sqlUtil.composeUpdateString({})
+        }
+        expect(fn).to.throw(Error)
     })
 })
