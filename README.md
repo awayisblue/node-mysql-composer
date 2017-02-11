@@ -49,7 +49,7 @@ The highlighted part of this syntax is handled by composeUpdateString.Call compo
 
 ## composer
 
-`composer`, based on `composeInsertString` and `composerInsertString`, is a simple tool for you to operate mysql database.
+`composer`, based on `composeInsertString` and `composerInsertString`, is a simple tool for you to execute sql on mysql database.
 ```js
 const sqlUtil = require('mysql-composer')
 const mysql = require('mysql')
@@ -68,7 +68,7 @@ const composer = sqlUtil.composer(connection)
 - query
 
 ### insert
- insert(config,callback) <br/>
+**insert(config,callback)**<br/>
  - config:
  
    ```js
@@ -82,7 +82,7 @@ const composer = sqlUtil.composer(connection)
        onDuplicateKeyUpdate:['field1,field2'],//optional 
     }
     ```
- - callback: will be called when sql executed as `callback(err,result)`
+ - callback: will be called when sql is executed: `callback(err,result)`
  example:
     ```js
     //insert ignore into user (`name`,`age`) values ('Tom','18')
@@ -93,13 +93,13 @@ const composer = sqlUtil.composer(connection)
       age:'18'
       }
     },function(err,result){
-      //your code after sql executed
+      //your code after sql is executed
     })
     
     ```
 
 ### update
- insert(config,callback) <br/>
+**update(config,callback)** <br/>
  - config:
  
    ```js
@@ -109,36 +109,38 @@ const composer = sqlUtil.composer(connection)
              field1:'value1',
              field2:'value2'
            },
-       where:'id=1' //recommended, because otherwise your whole table will be updated.
+       where:'id=1' //optional but recommended, because otherwise your whole table will be updated.
     }
     ```
- - callback: will be called when sql executed as `callback(err,result)`
+ - callback: will be called when sql is executed: `callback(err,result)`
+ 
  example:
-    ```js
-    //update `user` set age='18' where id=1
-    composer.update({
-     table:'user',
-     data:{
-      age:'18'
-      },
-     where:"id=1"
-    },function(err,result){
-      //your code after sql executed
-    })
-    
-    ```
+```js
+//update `user` set age='18' where id=1
+composer.update({
+ table:'user',
+ data:{
+  age:'18'
+  },
+ where:"id=1"
+},function(err,result){
+  //your code after sql is executed
+})
+
+```
 
 ### query
 
- query(sql,callback) <br/>
+**query(sql,callback)** <br/>
  - sql: a valid sql syntax
- - callback: will be called when sql executed as `callback(err,result)`
+ - callback: will be called when sql is executed: `callback(err,result)`
+ 
  example:
-    ```js
-    //update `user` set age='18' where id=1
-    composer.query('select * from user where id=1',function(err,result){
-      //your code after sql executed
-    })
-    
-    ```
+```js
+//update `user` set age='18' where id=1
+composer.query('select * from user where id=1',function(err,result){
+  //your code after sql is executed
+})
+
+```
     
