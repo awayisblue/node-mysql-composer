@@ -41,12 +41,24 @@ If you still find it tedious to concat your sql , you can use `composer` api ins
 
 insert ignore into tableName ``(`c1`,`c2`) values ('v1','v2')``<br/>
 The highlighted part of this syntax is handled by composerInsertString.Call composeInsertString(obj) to get this part and concat the sql.
-
+```js
+const sqlUtil = require('mysql-composer')
+const insertStr = sqlUtil.composeInsertString({
+    c1:'v1',
+    c2:'v2'
+})
+```
 ## composeUpdateString
 
 update tableName  set `` `c1`='v1',`c2`='v2' `` where id=1<br/>
 The highlighted part of this syntax is handled by composeUpdateString.Call composeUpdateString(obj) to get this part and concat the sql.
-
+```js
+const sqlUtil = require('mysql-composer')
+const updateStr = sqlUtil.composeUpdateString({
+    c1:'v1',
+    c2:'v2'
+})
+```
 ## composer
 
 `composer`, based on `composeInsertString` and `composerInsertString`, is a simple tool for you to execute sql on mysql database.
@@ -83,20 +95,22 @@ const composer = sqlUtil.composer(connection)
     }
     ```
  - callback: will be called when sql is executed: `callback(err,result)`
- example:
-    ```js
-    //insert ignore into user (`name`,`age`) values ('Tom','18')
-    composer.insert({
-     table:'user',
-     data:{
-      name:'Tom',
-      age:'18'
-      }
-    },function(err,result){
-      //your code after sql is executed
-    })
-    
-    ```
+
+example:
+
+```js
+//insert ignore into user (`name`,`age`) values ('Tom','18')
+composer.insert({
+ table:'user',
+ data:{
+  name:'Tom',
+  age:'18'
+  }
+},function(err,result){
+  //your code after sql is executed
+})
+
+```
 
 ### update
 **update(config,callback)** <br/>
@@ -113,8 +127,9 @@ const composer = sqlUtil.composer(connection)
     }
     ```
  - callback: will be called when sql is executed: `callback(err,result)`
- 
- example:
+
+example:
+
 ```js
 //update `user` set age='18' where id=1
 composer.update({
@@ -134,8 +149,9 @@ composer.update({
 **query(sql,callback)** <br/>
  - sql: a valid sql syntax
  - callback: will be called when sql is executed: `callback(err,result)`
- 
- example:
+
+example:
+
 ```js
 //update `user` set age='18' where id=1
 composer.query('select * from user where id=1',function(err,result){
