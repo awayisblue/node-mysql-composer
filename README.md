@@ -39,7 +39,7 @@ If you still find it tedious to concat your sql , you can use `composer` api ins
 
 ## composeInsertString
 
-insert ignore into tableName ``(`c1`,`c2`) values ('v1','v2')``<br/>
+##### insert ignore into tableName ``(`c1`,`c2`) values ('v1','v2')``<br/>
 The highlighted part of this syntax is handled by composerInsertString.Call composeInsertString(obj) to get this part and concat the sql.
 ```js
 const sqlUtil = require('mysql-composer')
@@ -50,15 +50,18 @@ const insertStr = sqlUtil.composeInsertString({
 ```
 ## composeUpdateString
 
-update tableName  set `` `c1`='v1',`c2`='v2' `` where id=1<br/>
+##### update tableName  set `` `c1`='v1',`c2`=`c2`+1 `` where id=1<br/>
 The highlighted part of this syntax is handled by composeUpdateString.Call composeUpdateString(obj) to get this part and concat the sql.
 ```js
 const sqlUtil = require('mysql-composer')
 const updateStr = sqlUtil.composeUpdateString({
     c1:'v1',
-    c2:'v2'
+    c2:function(){
+        return 'c2+1'
+    }
 })
 ```
+c2 property is a function returns a string. This string must be a statement that is valid in an update sql. Arithmetic operators supported are: `+`,`-`,`*`,`/`,`MOD`,`%`,`DIV`.
 ## composer
 
 `composer`, based on `composeInsertString` and `composerInsertString`, is a simple tool for you to execute sql on mysql database.
@@ -80,22 +83,25 @@ const composer = sqlUtil.composer(connection)
 - query
 
 ### insert
-**insert(config,callback)**<br/>
+**insert(config,callback,inspect)**<br/>
  - config:
  
-   ```js
-    {
-       table:'tableName', //require
-       data:{ //require
-             field1:'value1',
-             field2:'value2'
-           },
-       ignore:true,//optional,defaults to true
-       onDuplicateKeyUpdate:['field1,field2'],//optional 
-    }
-    ```
+```js
+{
+   table:'tableName', //require
+   data:{ //require
+         field1:'value1',
+         field2:'value2'
+       },
+   ignore:true,//optional,defaults to true
+   onDuplicateKeyUpdate:{field1:'value1',
+   field2:function(){
+        return 'field1+1'
+    }},//optional 
+}
+```
  - callback: will be called when sql is executed: `callback(err,result)`
-
+ - inspect: will be called with generated sql : `inspect(sql)`
 example:
 
 ```js
@@ -108,12 +114,14 @@ composer.insert({
   }
 },function(err,result){
   //your code after sql is executed
+},function(sql){
+    console.log(sql)
 })
 
 ```
 
 ### update
-**update(config,callback)** <br/>
+**update(config,callback,inspect)** <br/>
  - config:
  
    ```js
@@ -121,13 +129,15 @@ composer.insert({
        table:'tableName', //require
        data:{ //require
              field1:'value1',
-             field2:'value2'
+             field2:function(){
+                  return 'field2+1'
+              }
            },
-       where:'id=1' //optional but recommended, because otherwise your whole table will be updated.
+       where:'id=1' //require,if you need to update all, you should explicitly set 'where' to 1.
     }
     ```
  - callback: will be called when sql is executed: `callback(err,result)`
-
+ - inspect: will be called with generated sql : `inspect(sql)`
 example:
 
 ```js
@@ -140,22 +150,26 @@ composer.update({
  where:"id=1"
 },function(err,result){
   //your code after sql is executed
+},function(sql){
+    console.log(sql)
 })
 
 ```
 
 ### query
 
-**query(sql,callback)** <br/>
+**query(sql,callback,inspect)** <br/>
  - sql: a valid sql syntax
  - callback: will be called when sql is executed: `callback(err,result)`
-
+ - inspect: will be called with generated sql : `inspect(sql)`
 example:
 
 ```js
 //update `user` set age='18' where id=1
 composer.query('select * from user where id=1',function(err,result){
   //your code after sql is executed
+},function(sql){
+    console.log(sql)
 })
 
 ```

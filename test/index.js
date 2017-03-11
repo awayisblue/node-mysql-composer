@@ -52,7 +52,9 @@ describe('#composer',function(){
                 composer.insert({
                     table:'name',
                     ignore:true,
-                    onDuplicateKeyUpdate:['field3'],
+                    onDuplicateKeyUpdate:{
+                        field3:'value3'
+                    },
                     data:{
                         field1:'value1',
                         field2:'value2'
@@ -96,7 +98,9 @@ describe('#composer',function(){
             composer.insert({
                 table:'name',
                 ignore:false,
-                onDuplicateKeyUpdate:['field1'],
+                onDuplicateKeyUpdate:{
+                    field1:'value1',
+                },
                 data:{
                     field1:'value1',
                     field2:'value2'
@@ -105,6 +109,26 @@ describe('#composer',function(){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
                     return striped == "insert into name (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`='value1'"
+                })
+            })
+        })
+        it('should be a correct insert syntax with on duplicate key update clause that use arithmetic string to compute new value',function(){
+            composer.insert({
+                table:'name',
+                ignore:false,
+                onDuplicateKeyUpdate:{
+                    field1:function(){
+                        return 'field1+1 mod 2+field2/2-4*3+5%4'
+                    },
+                },
+                data:{
+                    field1:'value1',
+                    field2:'value2'
+                }
+            },function(err,sql){
+                expect(sql).to.satisfy(function(sql){
+                    var striped = sql.trim().replace(/\s+/g," ")
+                    return striped == "insert into name (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`=`field1`+1 mod 2+`field2`/2-4*3+5%4"
                 })
             })
         })
@@ -127,7 +151,8 @@ describe('#composer',function(){
             var fn = function(){
                 composer.update({
                     table:'name',
-                    ignore:true
+                    ignore:true,
+                    where:'1'
                 },function(err){
 
                 })
@@ -141,26 +166,27 @@ describe('#composer',function(){
                     ignore:true,
                     data:{
 
-                    }
+                    },
+                    where:'1'
                 },function(err){
 
                 })
             }
             expect(fn).to.throw(Error)
         })
-        it('should be a correct update syntax without where clause',function(){
-            composer.update({
-                table:'name',
-                data:{
-                    field1:'value1',
-                    field2:'value2'
-                }
-            },function(err,sql){
-                expect(sql).to.satisfy(function(sql){
-                    var striped = sql.trim().replace(/\s+/g," ")
-                    return striped == "update name set `field1`='value1',`field2`='value2'"
+        it('should throw error without where clause',function(){
+            var fn = function() {
+                composer.update({
+                    table: 'name',
+                    data: {
+                        field1: 'value1',
+                        field2: 'value2'
+                    }
+                }, function (err, sql) {
+
                 })
-            })
+            }
+            expect(fn).to.throw(Error)
         })
         it('should be a correct update syntax with where clause',function(){
             composer.update({
@@ -214,6 +240,19 @@ describe('#composeUpdateString',function(){
         expect(updatStr).to.satisfy(function(str){
             var striped = str.trim().replace(/\s+/g," ")
             return striped == "`field1`='value1',`field2`='value2'"
+        })
+    })
+    it('should be a correct update string when data contains function type property that returns string',function(){
+        const updatStr = sqlUtil.composeUpdateString({
+            field1:'value1',
+            field2:'value2',
+            field3:function(){
+                return 'field1+field2'
+            }
+        })
+        expect(updatStr).to.satisfy(function(str){
+            var striped = str.trim().replace(/\s+/g," ")
+            return striped == "`field1`='value1',`field2`='value2',`field3`=`field1`+`field2`"
         })
     })
     it('should throw error when data is not provided',function(){
