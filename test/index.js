@@ -75,7 +75,7 @@ describe('#composer',function(){
             },function(err,sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
-                    return striped == "insert ignore into name (`field1`,`field2`) values ('value1','value2')"
+                    return striped == "insert ignore into `name` (`field1`,`field2`) values ('value1','value2')"
                 })
             })
         })
@@ -90,7 +90,7 @@ describe('#composer',function(){
             },function(err,sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
-                    return striped == "insert into name (`field1`,`field2`) values ('value1','value2')"
+                    return striped == "insert into `name` (`field1`,`field2`) values ('value1','value2')"
                 })
             })
         })
@@ -108,7 +108,7 @@ describe('#composer',function(){
             },function(err,sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
-                    return striped == "insert into name (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`='value1'"
+                    return striped == "insert into `name` (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`='value1'"
                 })
             })
         })
@@ -128,7 +128,7 @@ describe('#composer',function(){
             },function(err,sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
-                    return striped == "insert into name (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`=`field1`+1 mod 2+`field2`/2-4*3+5%4"
+                    return striped == "insert into `name` (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`=`field1`+1 mod 2+`field2`/2-4*3+5%4"
                 })
             })
         })
@@ -199,7 +199,8 @@ describe('#composer',function(){
             },function(err,sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
-                    return striped == "update name set `field1`='value1',`field2`='value2' where id=2"
+                    // throw new Error(sql)
+                    return striped == "update `name` set `field1`='value1',`field2`='value2' where `id`=2"
                 })
             })
         })
