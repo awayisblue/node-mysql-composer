@@ -173,4 +173,24 @@ composer.query('select * from user where id=1',function(err,result){
 })
 
 ```
+
+# Promise support
+
+`composer` supports promise, it will be convenient if you like to use `mysql-composer` with `co` or async/await.
+if you do not provide a callback in `insert`, 'update' and 'query' apis of `composer`, they will return a promise:
+```js
+var promise = composer.update({
+            table:'name',
+            where:'id=2',
+            data:{
+                field1:'value1',
+                field2:'value2'
+            }
+        })
+promise.then(function(result){
+
+}).catch(function(err){
+
+})
+```
     

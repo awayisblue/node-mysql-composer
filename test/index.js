@@ -1,10 +1,10 @@
 const expect = require('chai').expect
 const sqlUtil = require('../lib/index')
-
+const co = require('co')
 describe('#composer',function(){
     var mockConnection = {
         query:function(sql,callback){
-            callback(null,sql)
+            callback(null,'mockData')
         }
     }
     var composer = sqlUtil.composer(mockConnection)
@@ -72,7 +72,9 @@ describe('#composer',function(){
                     field1:'value1',
                     field2:'value2'
                 }
-            },function(err,sql){
+            },function(err,result){
+
+            },function(sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
                     return striped == "insert ignore into `name` (`field1`,`field2`) values ('value1','value2')"
@@ -87,7 +89,9 @@ describe('#composer',function(){
                     field1:'value1',
                     field2:'value2'
                 }
-            },function(err,sql){
+            },function(err,result){
+
+            },function(sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
                     return striped == "insert into `name` (`field1`,`field2`) values ('value1','value2')"
@@ -105,7 +109,9 @@ describe('#composer',function(){
                     field1:'value1',
                     field2:'value2'
                 }
-            },function(err,sql){
+            },function(err,result){
+
+            },function(sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
                     return striped == "insert into `name` (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`='value1'"
@@ -125,11 +131,26 @@ describe('#composer',function(){
                     field1:'value1',
                     field2:'value2'
                 }
-            },function(err,sql){
+            },function(err,result){
+
+            },function(sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
                     return striped == "insert into `name` (`field1`,`field2`) values ('value1','value2') on duplicate key update `field1`=`field1`+1 mod 2+`field2`/2-4*3+5%4"
                 })
+            })
+        })
+        it('should return a promise when callback is not provided',function(){
+            var p = composer.insert({
+                table:'name',
+                data:{
+                    field1:'value1',
+                    field2:'value2'
+                }
+            })
+            expect(p).to.satisfy(function(p){
+
+                return typeof p.then === 'function'
             })
         })
     })
@@ -196,12 +217,37 @@ describe('#composer',function(){
                     field1:'value1',
                     field2:'value2'
                 }
-            },function(err,sql){
+            },function(err,result){
+
+            },function(sql){
                 expect(sql).to.satisfy(function(sql){
                     var striped = sql.trim().replace(/\s+/g," ")
                     // throw new Error(sql)
                     return striped == "update `name` set `field1`='value1',`field2`='value2' where `id`=2"
                 })
+            })
+        })
+        it('should return a promise when callback is not provided',function(){
+            var p = composer.update({
+                table:'name',
+                where:'id=2',
+                data:{
+                    field1:'value1',
+                    field2:'value2'
+                }
+            })
+            expect(p).to.satisfy(function(p){
+
+                return typeof p.then === 'function'
+            })
+        })
+    })
+    describe('#query',function(){
+        it('should return a promise when callback is not provided',function(){
+            var p = composer.query('select 1 from users')
+            expect(p).to.satisfy(function(p){
+
+                return typeof p.then === 'function'
             })
         })
     })
