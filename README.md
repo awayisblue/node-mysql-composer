@@ -1,72 +1,18 @@
-# node-mysql-composer
-A simple nodejs mysql syntax composer for insert and update syntax.
+# Introduction
+
+One of the duty of my job is to write web scraper -- scrape data and store to mysql tables. And most of the time, the origin tables are not created by myself. It's inefficient to model these tables like `sequelize` do. All I want is having direct access to the tables and being efficient. That's why I develop `mysql-composer`.
+
+If you are looking for a more powerful tool, [sequelize](https://github.com/sequelize/sequelize) may be a better choice.
 
 # Installation
 
 `npm i -S mysql-composer`
 
-# Why mysql-composer?
-The reason why I write this module is that personally I prefer writing sql syntax from scratch rather than using an orm. Writing sql syntax directly offers me more flexibility and I know what exactly is done. But this way sometimes the syntax is so long that it becomes tedious and so here comes mysql-composer.
+# Apis
 
-# What does mysql-composer do?
-
-Suppose that you have a table with 10 or more columns. If you wanna insert a row, your syntax will be like:
+`mysql-composer` is a simple tool for you to execute sql on mysql database.
 ```js
-const sql = "insert ignore into tableName (`c1`,`c2`,`c3`,`c4`,`c5`,`c6`,`c7`,`c8`,`c9`,`c10`) values ('v1','v2','v3','v4','v5','v6','v7','v8','v9','v10')"
-
-```
- It's quite a long sql string which is tedious to concat and escape . With `mysql-composer`, I can now write it in this way:
-```js
-const sqlUtil = require('mysql-composer')
-const str = sqlUtil.composeInsertString({
-    c1:'v1',
-    c2:'v2',
-    c3:'v3',
-    c4:'v4',
-    c5:'v5',
-    c6:'v6',
-    c7:'v7',
-    c8:'v8',
-    c9:'v9',
-    c10:'v10'
-})
-const sql = "insert ignore into tableName "+str
-```
-And the values are escaped by `mysql.escape()` under the hook to prevent sql injection.
-If you still find it tedious to concat your sql , you can use `composer` api instead.
-
-# Api
-
-## composeInsertString
-
-##### insert ignore into tableName ``(`c1`,`c2`) values ('v1','v2')``<br/>
-The highlighted part of this syntax is handled by composerInsertString.Call composeInsertString(obj) to get this part and concat the sql.
-```js
-const sqlUtil = require('mysql-composer')
-const insertStr = sqlUtil.composeInsertString({
-    c1:'v1',
-    c2:'v2'
-})
-```
-## composeUpdateString
-
-##### update tableName  set `` `c1`='v1',`c2`=`c2`+1 `` where id=1<br/>
-The highlighted part of this syntax is handled by composeUpdateString.Call composeUpdateString(obj) to get this part and concat the sql.
-```js
-const sqlUtil = require('mysql-composer')
-const updateStr = sqlUtil.composeUpdateString({
-    c1:'v1',
-    c2:function(){
-        return 'c2+1'
-    }
-})
-```
-c2 property is a function returns a string. This string must be a statement that is valid in an update sql. Arithmetic operators supported are: `+`,`-`,`*`,`/`,`MOD`,`%`,`DIV`.
-## composer
-
-`composer`, based on `composeInsertString` and `composerInsertString`, is a simple tool for you to execute sql on mysql database.
-```js
-const sqlUtil = require('mysql-composer')
+const Composer = require('mysql-composer')
 const mysql = require('mysql')
 const connection = mysql.createConnection({
       host     : 'localhost',
@@ -74,15 +20,15 @@ const connection = mysql.createConnection({
       password : 'secret',
       database : 'my_db'
     });
-const composer = sqlUtil.composer(connection)
+const composer = new Composer(connection)
 ```
-`composer` has 3 apis.
+`mysql-composer` has 3 apis.
 
 - insert
 - update
 - query
 
-### insert
+## insert
 **insert(config,callback,inspect)**<br/>
  - config:
  
@@ -102,8 +48,8 @@ const composer = sqlUtil.composer(connection)
 ```
  - callback: will be called when sql is executed: `callback(err,result)`
  - inspect: will be called with generated sql : `inspect(sql)`
-example:
 
+example:
 ```js
 //insert ignore into user (`name`,`age`) values ('Tom','18')
 composer.insert({
@@ -120,7 +66,7 @@ composer.insert({
 
 ```
 
-### update
+## update
 **update(config,callback,inspect)** <br/>
  - config:
  
@@ -138,8 +84,8 @@ composer.insert({
     ```
  - callback: will be called when sql is executed: `callback(err,result)`
  - inspect: will be called with generated sql : `inspect(sql)`
-example:
 
+example:
 ```js
 //update `user` set age='18' where id=1
 composer.update({
@@ -156,14 +102,14 @@ composer.update({
 
 ```
 
-### query
+## query
 
 **query(sql,callback,inspect)** <br/>
  - sql: a valid sql syntax
  - callback: will be called when sql is executed: `callback(err,result)`
  - inspect: will be called with generated sql : `inspect(sql)`
-example:
 
+example:
 ```js
 //update `user` set age='18' where id=1
 composer.query('select * from user where id=1',function(err,result){
@@ -176,8 +122,8 @@ composer.query('select * from user where id=1',function(err,result){
 
 # Promise support
 
-`composer` supports promise, it will be convenient if you like to use `mysql-composer` with `co` or async/await.
-if you do not provide a callback in `insert`, 'update' and 'query' apis of `composer`, they will return a promise:
+`mysql-composer` supports promise, it will be convenient if you like to use `mysql-composer` with `co` or async/await.
+if you do not provide a callback in `insert`, 'update' and 'query' apis, they will return a promise:
 ```js
 var promise = composer.update({
             table:'name',

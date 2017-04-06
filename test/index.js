@@ -1,13 +1,14 @@
 const expect = require('chai').expect
-const sqlUtil = require('../lib/index')
-const co = require('co')
-describe('#composer',function(){
+const Composer = require('../lib/index')
+const mysql = require('mysql')
+describe('#Composer',function(){
     var mockConnection = {
         query:function(sql,callback){
             callback(null,'mockData')
-        }
+        },
+        escape:mysql.escape
     }
-    var composer = sqlUtil.composer(mockConnection)
+    var composer = new Composer(mockConnection)
     describe('#insert',function(){
         it('should throw error when table is not provided',function(){
             var fn = function(){
@@ -250,68 +251,5 @@ describe('#composer',function(){
                 return typeof p.then === 'function'
             })
         })
-    })
-})
-
-describe('#composeInsertString',function(){
-    it('should be a correct insert string',function(){
-        const insertStr = sqlUtil.composeInsertString({
-            field1:'value1',
-            field2:'value2'
-        })
-        expect(insertStr).to.satisfy(function(str){
-            var striped = str.trim().replace(/\s+/g," ")
-            return striped == "(`field1`,`field2`) values ('value1','value2')"
-        })
-    })
-    it('should throw error when data is not provided',function(){
-        var fn = function(){
-            const insertStr = sqlUtil.composeInsertString()
-        }
-        expect(fn).to.throw(Error)
-    })
-    it('should throw error when data is an empty object',function(){
-        var fn = function(){
-            const insertStr = sqlUtil.composeInsertString({})
-        }
-        expect(fn).to.throw(Error)
-    })
-})
-
-describe('#composeUpdateString',function(){
-    it('should be a correct update string',function(){
-        const updatStr = sqlUtil.composeUpdateString({
-            field1:'value1',
-            field2:'value2'
-        })
-        expect(updatStr).to.satisfy(function(str){
-            var striped = str.trim().replace(/\s+/g," ")
-            return striped == "`field1`='value1',`field2`='value2'"
-        })
-    })
-    it('should be a correct update string when data contains function type property that returns string',function(){
-        const updatStr = sqlUtil.composeUpdateString({
-            field1:'value1',
-            field2:'value2',
-            field3:function(){
-                return 'field1+field2'
-            }
-        })
-        expect(updatStr).to.satisfy(function(str){
-            var striped = str.trim().replace(/\s+/g," ")
-            return striped == "`field1`='value1',`field2`='value2',`field3`=`field1`+`field2`"
-        })
-    })
-    it('should throw error when data is not provided',function(){
-        var fn = function(){
-            const updatStr = sqlUtil.composeUpdateString()
-        }
-        expect(fn).to.throw(Error)
-    })
-    it('should throw error when data is an empty object',function(){
-        var fn = function(){
-            const updatStr = sqlUtil.composeUpdateString({})
-        }
-        expect(fn).to.throw(Error)
     })
 })

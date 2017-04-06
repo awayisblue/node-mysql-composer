@@ -23,11 +23,9 @@
     "url": "https://github.com/awayisblue/node-mysql-composer/issues"
   },
   "homepage": "https://github.com/awayisblue/node-mysql-composer#readme",
-  "dependencies": {
-    "mysql": "^2.13.0"
-  },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^3.2.0"
+    "mocha": "^3.2.0",
+    "mysql": "^2.13.0"
   }
 }
