@@ -213,7 +213,7 @@ describe('#Composer',function(){
         it('should be a correct update syntax with where clause',function(){
             composer.update({
                 table:'name',
-                where:'id=2',
+                where:'`id`=2',
                 data:{
                     field1:'value1',
                     field2:'value2'
