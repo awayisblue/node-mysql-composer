@@ -3,12 +3,12 @@
 - [Introduction](#user-content-introduction)
 - [Installation](#user-content-installation)
 - [Apis](#user-content-Apis)
- - [insert](#user-content-insert)
- - [update](#user-content-update)
- - [query](#user-content-query)
- - [beginTransaction](#user-content-begintransaction)
- - [rollback](#user-content-rollback)
- - [commit](#user-content-commit)
+  - [insert](#user-content-insert)
+  - [update](#user-content-update)
+  - [query](#user-content-query)
+  - [beginTransaction](#user-content-begintransaction)
+  - [rollback](#user-content-rollback)
+  - [commit](#user-content-commit)
 - [Promise support](#user-content-promise-support)
 
 # Introduction
