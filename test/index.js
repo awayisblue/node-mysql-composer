@@ -6,7 +6,16 @@ describe('#Composer',function(){
         query:function(sql,callback){
             callback(null,'mockData')
         },
-        escape:mysql.escape
+        escape:mysql.escape,
+        beginTransaction:function(callback){
+            callback()
+        },
+        rollback:function(callback){
+            callback()
+        },
+        commit:function(callback){
+            callback()
+        }
     }
     var composer = new Composer(mockConnection)
     describe('#insert',function(){
@@ -249,6 +258,38 @@ describe('#Composer',function(){
             expect(p).to.satisfy(function(p){
 
                 return typeof p.then === 'function'
+            })
+        })
+    })
+    describe('#transaction',function(){
+        describe('#beginTransaction',function(){
+
+            it('should return a promise when callback is not provided',function(){
+                var p = composer.beginTransaction()
+                expect(p).to.satisfy(function(p){
+
+                    return typeof p.then === 'function'
+                })
+            })
+        })
+        describe('#rollback',function(){
+
+            it('should return a promise when callback is not provided',function(){
+                var p = composer.beginTransaction()
+                expect(p).to.satisfy(function(p){
+
+                    return typeof p.then === 'function'
+                })
+            })
+        })
+        describe('#commit',function(){
+
+            it('should return a promise when callback is not provided',function(){
+                var p = composer.beginTransaction()
+                expect(p).to.satisfy(function(p){
+
+                    return typeof p.then === 'function'
+                })
             })
         })
     })
