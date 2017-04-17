@@ -1,3 +1,16 @@
+
+# Table of Contents
+- [Introduction](#user-content-introduction)
+- [Installation](#user-content-installation)
+- [Apis](#user-content-Apis)
+ - [insert](#user-content-insert)
+ - [update](#user-content-update)
+ - [query](#user-content-query)
+ - [beginTransaction](#user-content-begintransaction)
+ - [rollback](#user-content-rollback)
+ - [commit](#user-content-commit)
+- [Promise support](#user-content-promise-support)
+
 # Introduction
 
 One of the duty of my job is to write web scraper -- scrape data and store to mysql tables. And most of the time, the origin tables are not created by myself. It's inefficient to model these tables like `sequelize` do. All I want is having direct access to the tables and being efficient. That's why I develop `mysql-composer`.
@@ -120,10 +133,52 @@ composer.query('select * from user where id=1',function(err,result){
 
 ```
 
+## beginTransaction
+
+**beginTransaction(callback)** <br/>
+ - callback: will be called when beginTransaction is executed: `callback(err)`
+
+example:
+```js
+composer.beginTransaction(function(err){
+    if(err)throw err
+    composer.insert({
+     table:'user',
+     data:{
+      name:'Tom',
+      age:'18'
+      }
+    },function(err,result){
+      if(err)return composer.rollback(function(){
+        throw err
+      })
+
+      composer.commit(function(err){
+         if(err)return composer.rollback(function(){
+            throw err
+         })
+
+         console.log('success')
+      })
+    })
+})
+
+```
+## rollback
+
+**rollback(callback)** <br/>
+ - callback: will be called when rollback is executed: `callback(err)`
+
+## commit
+
+**commit(callback)** <br/>
+ - callback: will be called when commit is executed: `callback(err)`
+
+
 # Promise support
 
 `mysql-composer` supports promise, it will be convenient if you like to use `mysql-composer` with `co` or async/await.
-if you do not provide a callback in `insert`, 'update' and 'query' apis, they will return a promise:
+if you do not provide a callback in the `apis` above, they will return a promise:
 ```js
 var promise = composer.update({
             table:'name',
