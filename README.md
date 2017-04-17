@@ -35,11 +35,7 @@ const connection = mysql.createConnection({
     });
 const composer = new Composer(connection)
 ```
-`mysql-composer` has 3 apis.
 
-- insert
-- update
-- query
 
 ## insert
 **insert(config,callback,inspect)**<br/>
